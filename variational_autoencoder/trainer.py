@@ -14,7 +14,7 @@ class LightningTrainer(pl.LightningModule):
         self.save_hyperparameters(ignore=['model'])
         self.model = model
         
-        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=lr)
+        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=lr, weight_decay=1e-5)
         self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, 25)
         
         self.fid_metric = FrechetInceptionDistance(feature=64)
@@ -36,8 +36,9 @@ class LightningTrainer(pl.LightningModule):
         batch_size = x.shape[0]
         fake_images =  self.model.sample(batch_size)
         
-        self.fid_metric.update((x*255).type(torch.uint8), real=True)
-        self.fid_metric.update((fake_images*255).type(torch.uint8), real=False)
+        # convert to uint8 type with denormalization
+        self.fid_metric.update((((x+1)/2)*255).type(torch.uint8), real=True)
+        self.fid_metric.update((((fake_images+1)/2)*255).type(torch.uint8), real=False)
         
         fid_score = self.fid_metric.compute()
         self.log('FID', fid_score, on_epoch=True)

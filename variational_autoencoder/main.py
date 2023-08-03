@@ -12,22 +12,21 @@ from model import VAE
 from trainer import LightningTrainer
 
 BATCH_SIZE = 128
-LR = 0.0005
+LR = 0.0003
 NUM_EPOCHS = 200
 
 if __name__=="__main__":
     logger = WandbLogger(
         entity='slavaheroes',
-        project='vae',
-        name='cnn_cifar10'
+        project='vae'
     )
     
     transform = transforms.Compose(
     [
-        # transforms.Pad(padding=4, fill=0),
-        transforms.RandomHorizontalFlip(p=0.5),
+        # transforms.RandomHorizontalFlip(p=0.5),
         # transforms.RandomCrop(size=32, padding=4),
-        transforms.ToTensor()
+        transforms.ToTensor(),
+        # transforms.Normalize((0.5,), (0.5,))
     ])
     
     dataset = torchvision.datasets.CIFAR10(root='/SSD/slava/', train=True,
@@ -56,7 +55,6 @@ if __name__=="__main__":
         logger=logger,
         callbacks=callbacks,
         log_every_n_steps=2,
-        
         # precision='16-mixed'
     )
     
