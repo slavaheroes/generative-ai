@@ -2,22 +2,21 @@ import torch
 
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
-from pytorch_lightning.callbacks import LearningRateMonitor
 
 import torchvision
 import torchvision.transforms as transforms
 
-from model import VAE
-from trainer import LightningTrainer
+from models import Generator, Discriminator
+from trainer import LightningTrainerGAN
 
 BATCH_SIZE = 128
-LR = 0.0003
+LR = 0.0002
 NUM_EPOCHS = 200
 
 if __name__=="__main__":
     logger = WandbLogger(
         entity='slavaheroes',
-        project='vae'
+        project='dcgan'
     )
     
     transform = transforms.Compose(
@@ -25,7 +24,7 @@ if __name__=="__main__":
         # transforms.RandomHorizontalFlip(p=0.5),
         # transforms.RandomCrop(size=32, padding=4),
         transforms.ToTensor(),
-        # transforms.Normalize((0.5,), (0.5,))
+        transforms.Normalize((0.5,), (0.5,))
     ])
     
     dataset = torchvision.datasets.CIFAR10(root='/SSD/slava/', train=True,
@@ -38,21 +37,19 @@ if __name__=="__main__":
     testloader = torch.utils.data.DataLoader(testset, batch_size=200,
                                          shuffle=False, num_workers=8)
     
-    model = VAE()
-    pl_model = LightningTrainer(model=model, lr=LR)
-    
-    callbacks=[
-        LearningRateMonitor(logging_interval='epoch')
-    ]
+    pl_model = LightningTrainerGAN(
+        generator=Generator(),
+        discriminator=Discriminator(),
+        lr=LR
+    )
     
     trainer = pl.Trainer(
         accelerator='gpu',
-        devices=[0],
+        devices=[1],
         max_epochs=NUM_EPOCHS,
         num_sanity_val_steps=0,
         check_val_every_n_epoch=5,
         logger=logger,
-        callbacks=callbacks,
         log_every_n_steps=2,
         # precision='16-mixed'
     )
