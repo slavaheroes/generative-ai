@@ -99,5 +99,3 @@ class LightningTrainerGAN(pl.LightningModule):
     def configure_optimizers(self):
         return [self.g_opt, self.d_opt], []
     
-
-    
