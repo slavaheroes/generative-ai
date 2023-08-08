@@ -1,6 +1,6 @@
-from resnet import ResNet
-from wide_resnet import WideResNet
-
+from models.resnet import ResNet
+from models.wide_resnet import WideResNet
+from models.convnext import ConvNeXt
 
 MODEL_NAMES = ['resnet', 'wide_resnet', 'convnext']
 
@@ -23,5 +23,11 @@ def make_model(model_name: str):
         )
         
     elif model_name=='convnext':
-        raise NotImplementedError
+        return ConvNeXt(
+            in_channels=3,
+            num_classes=10,
+            channels=[96, 192, 384, 768],
+            num_blocks=[3, 3, 27, 3],
+            drop_path_rate=0.2
+        )
     

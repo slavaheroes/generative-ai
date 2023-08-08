@@ -2,6 +2,8 @@
 
 In this folder, I keep the implementations of some famous architectures.
 
-> For 7/08/2023: It has implementations of only classification networks in supervised learning fashion fpr CIFAR-10.
+> For Now: It has implementations of only classification networks in supervised learning fashion fpr CIFAR-10.
 
-To train, run `python main.py`
+To train, run `python main.py --model_name [MODEL_NAME]`
+
+Check the available models in `utils.py`

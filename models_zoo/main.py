@@ -75,14 +75,14 @@ if __name__=="__main__":
     
     trainer = pl.Trainer(
         accelerator='gpu',
-        devices=[1],
+        devices=[3],
         max_epochs=epochs,
         num_sanity_val_steps=0,
         check_val_every_n_epoch=5,
         logger=logger,
         callbacks=callbacks,
         log_every_n_steps=2,
-        precision='16-mixed'
+        # precision='16-mixed'
     )
     
     trainer.fit(pl_model, trainloader, testloader)
