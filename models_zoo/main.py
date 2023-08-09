@@ -75,7 +75,7 @@ if __name__=="__main__":
     
     trainer = pl.Trainer(
         accelerator='gpu',
-        devices=[3],
+        devices=[2],
         max_epochs=epochs,
         num_sanity_val_steps=0,
         check_val_every_n_epoch=5,

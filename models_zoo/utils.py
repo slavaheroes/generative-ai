@@ -23,11 +23,12 @@ def make_model(model_name: str):
         )
         
     elif model_name=='convnext':
+        # tiny
         return ConvNeXt(
             in_channels=3,
             num_classes=10,
             channels=[96, 192, 384, 768],
-            num_blocks=[3, 3, 27, 3],
-            drop_path_rate=0.2
+            num_blocks=[3, 3, 9, 3],
+            drop_path_rate=0.
         )
     
