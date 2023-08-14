@@ -23,7 +23,7 @@ class LightningTrainer(pl.LightningModule):
         self.config = config
         
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=lr, weight_decay=1e-5)
-        self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, 50, gamma=0.3)
+        self.scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(self.optimizer, T_max=50, eta_min=0.0000001)
         
         # channel_size, height, width are for CIFAR10
         self.channels = 3
@@ -66,11 +66,12 @@ class LightningTrainer(pl.LightningModule):
     
     def training_step(self, batch, batch_idx):
         # Algorithm 1: JEM training
-        # fixed according to orig implementation
         
         x, y = batch
+
         # L_clf
         cls_logits = self.model.classify(x)
+        
         L_clf = self.cls_criterion(cls_logits, y)
         
         # sample from B
@@ -85,10 +86,20 @@ class LightningTrainer(pl.LightningModule):
         # update buffer
         self.buffer[buffer_indices] = x_hat_t.detach().cpu()
         
-        # L_gen
-        L_gen = self.model.energy(x_hat_t).mean() - self.model.energy(x).mean()
+        # L_gen        
+        L_gen = - (self.model.energy(x).mean() - self.model.energy(x_hat_t).mean())
+        print("gen loss", L_gen.item())
         
         loss = L_clf + L_gen
+
+        # stop training if loss is diverging
+        if loss.abs().item() > 1e8:
+            print("Loss is big! Stop training!")
+            exit(1)
+        
+        preds = torch.argmax(cls_logits, dim=1)
+        correct = (preds==y).sum()
+        self.log('train_acc', (correct/y.shape[0]), on_epoch=True)
         
         self.log('L_clf', L_clf, on_epoch=True)
         self.log('L_gen', L_gen, on_epoch=True)
@@ -100,7 +111,7 @@ class LightningTrainer(pl.LightningModule):
         cls_logits = self.model.classify(x)
         cls_probas = cls_logits.softmax(1)
         
-        preds, confidences = torch.max(cls_probas, dim=1)
+        confidences, preds = torch.max(cls_probas, dim=1)
         confidences = confidences.cpu().numpy()
         correct = (preds==y).float().cpu().numpy()
         
@@ -141,15 +152,15 @@ class LightningTrainer(pl.LightningModule):
             confidence.extend(conf); corrects.extend(corr)
         
         zipped_corr_conf = np.array(sorted(list(zip(corrects, confidence)), key=lambda x: x[1]))
+
         corrects = zipped_corr_conf[:, 0]
         confidence = zipped_corr_conf[:, 1]
         
         bucket_accs = utils.get_calibration_bucket(corrects, confidence)
-        
-        plt.plot([0, 1], [0, 1], linestyle='dashed', color='blue')
+
+        plt.plot([0, len(bucket_accs)], [0, 1], linestyle='dashed', color='blue')
         plt.bar(np.arange(len(bucket_accs)), height=bucket_accs, color='red')
         plt.ylim(0.0, 1.0)
-        plt.xlim(0.0, 1.0)
 
         self.logger.experiment.log({"calibration_plot": plt})
         self.validation_outputs.clear()

@@ -115,7 +115,7 @@ class WideResNet(nn.Module):
         width_factor=10,
         act_func=nn.ReLU,
         norm_fun=nn.Identity,
-        weight_stardardization=True
+        weight_stardardization=False
     ):
         super().__init__()
         

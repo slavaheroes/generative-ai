@@ -6,7 +6,6 @@ To run: `python main.py`
 
 With current setting, the FID score of the presented images below is `0.437`.
 
-> Note: I believe there is a bug in computation of FID as the score is too good.
 
 Generated images:
 
