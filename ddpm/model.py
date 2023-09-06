@@ -210,7 +210,7 @@ class UNet(nn.Module):
             nn.Linear(time_dim, time_dim)
         )
         
-        self.first_conv = Conv2d(in_channels, out_channels=dim*width_factor[0], kernel_size=1, padding=0, stride=1, weight_standard=True)
+        self.first_conv = Conv2d(in_channels, out_channels=dim*width_factor[0], kernel_size=1, padding=0, stride=1, weight_standard=False)
         
         # downsampling
         self.downs = nn.ModuleList([])
@@ -244,7 +244,7 @@ class UNet(nn.Module):
             ]))
 
         self.final_res = ResNetBlock(in_channels=2*out_ch, out_channels=out_ch, groups=groups)
-        self.final_conv = Conv2d(in_channels=out_ch, out_channels=in_channels, kernel_size=1, stride=1, padding=0, weight_standard=True)
+        self.final_conv = Conv2d(in_channels=out_ch, out_channels=in_channels, kernel_size=1, stride=1, padding=0, weight_standard=False)
         
         
     def forward(self, x, t):
@@ -294,8 +294,8 @@ class UNet(nn.Module):
            
 if __name__=="__main__":
     print("Test")
-    x = torch.randn((1, 3, 32, 32))
+    x = torch.randn((1, 1, 32, 32))
     t = torch.Tensor([1])
-    m = UNet(dim=32, downsample_w_stride=False, upsample_w_transpose=False, width_factor=(1, 2, 4))
+    m = UNet(dim=32, downsample_w_stride=False, upsample_w_transpose=False, width_factor=(1, 2, 4), in_channels=1)
     print(x.min(), x.max())
     print(m(x, t).unique())

@@ -51,7 +51,7 @@ class LightningLearner(pl.LightningModule):
         
         # optimizers
         
-        self.optimizer = torch.optim.Adam(self.unet.parameters(), lr=lr, weight_decay=1e-5)
+        self.optimizer = torch.optim.AdamW(self.unet.parameters(), lr=lr, weight_decay=1e-5)
         self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, 25)
         
         # self.fid_metric = FrechetInceptionDistance(feature=64)

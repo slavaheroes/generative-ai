@@ -46,7 +46,8 @@ if __name__=="__main__":
     testloader = torch.utils.data.DataLoader(testset, batch_size=40,
                                          shuffle=False, num_workers=8)
     
-    model = UNet(dim=32, downsample_w_stride=False, upsample_w_transpose=False, width_factor=(1, 2, 4))
+    model = UNet(dim=64, downsample_w_stride=False, upsample_w_transpose=False, width_factor=(1, 2, 4, 8),
+                 in_channels=3)
     
     pl_model = LightningLearner(unet=model,
                                 timesteps=config["timesteps"],
@@ -65,7 +66,7 @@ if __name__=="__main__":
     
     trainer = pl.Trainer(
         accelerator='gpu',
-        devices=[0],
+        devices=[1],
         max_epochs=NUM_EPOCHS,
         num_sanity_val_steps=0,
         check_val_every_n_epoch=2,
