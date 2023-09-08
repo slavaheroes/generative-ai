@@ -30,13 +30,6 @@ class LightningLearner(pl.LightningModule):
         
         if scheduling=='linear':
             self.betas = torch.linspace(beta_start, beta_end, timesteps)
-        elif scheduling=='cosine':
-            s = 0.008
-            x = torch.linspace(0, timesteps, timesteps+1)
-            alphas_cumprod = torch.cos(((x / timesteps) + s) / (1 + s) * torch.pi * 0.5) ** 2
-            alphas_cumprod = alphas_cumprod / alphas_cumprod[0]
-            betas = 1 - (alphas_cumprod[1:] / alphas_cumprod[:-1])
-            self.betas = torch.clip(betas, 0.0001, 0.9999)
         else:
             raise NotImplementedError
         

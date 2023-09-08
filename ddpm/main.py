@@ -12,10 +12,10 @@ from model import UNet
 
 BATCH_SIZE = 50
 LR = 0.0002
-NUM_EPOCHS = 100
+NUM_EPOCHS = 20
 
 config = {
-    "timesteps": 200,
+    "timesteps": 1000,
     "beta_start": 0.0001,
     "beta_end": 0.02,
     "schedule_type": "linear"

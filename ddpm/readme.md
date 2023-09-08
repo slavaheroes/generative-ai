@@ -14,3 +14,11 @@ Sampled batch of images from Gaussian noise:
 
 ![CIFAR10](examples/pure_noise_50297_22cb4ba28f8920b51707.png)
 ![MNIS](examples/pure_noise_60297_4f48cbc1074e0d1eda8a.png)
+
+### Some ablations
+
+Learnable positional embedding: `no visual improvement & train loss is the same`
+
+Upsample with transposed convolutions: `no improvement & train loss is the same`
+
+Downsample with strided convolutions: `no improvement & train loss is the same`
