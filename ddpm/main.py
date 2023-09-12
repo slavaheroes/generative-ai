@@ -12,10 +12,10 @@ from model import UNet
 
 BATCH_SIZE = 50
 LR = 0.0002
-NUM_EPOCHS = 20
+NUM_EPOCHS = 50
 
 config = {
-    "timesteps": 1000,
+    "timesteps": 200,
     "beta_start": 0.0001,
     "beta_end": 0.02,
     "schedule_type": "linear"
@@ -66,7 +66,7 @@ if __name__=="__main__":
     
     trainer = pl.Trainer(
         accelerator='gpu',
-        devices=[1],
+        devices=[0],
         max_epochs=NUM_EPOCHS,
         num_sanity_val_steps=0,
         check_val_every_n_epoch=2,

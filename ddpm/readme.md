@@ -4,6 +4,8 @@ This folder contains implementation of [DDPM](https://arxiv.org/abs/2006.11239) 
 
 The FID score was not computed, however train loss saturated after 20th epoch for both datasets CIFAR10 and MNIST.
 
+> Update 12 Sep 2023: FID score is 0.187 (!)
+
 The hyperparameters for MNIST:
 > UNet(dim=32, downsample_w_stride=False, upsample_w_transpose=False, width_factor=(1, 2, 4), in_channels=1)
 

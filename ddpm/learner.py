@@ -47,7 +47,7 @@ class LightningLearner(pl.LightningModule):
         self.optimizer = torch.optim.AdamW(self.unet.parameters(), lr=lr, weight_decay=1e-5)
         self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, 25)
         
-        # self.fid_metric = FrechetInceptionDistance(feature=64)
+        self.fid_metric = FrechetInceptionDistance(feature=64)
         
         self.log_indices = random.choices(range(100), k=10)
         
@@ -122,15 +122,15 @@ class LightningLearner(pl.LightningModule):
             
             from_given_noise = self.p_sample_loop(x_noise.shape, x_noise)
             from_pure_noise = self.p_sample_loop(x.shape)
-            
+                        
             # # convert to uint8 type with denormalization
-            # self.fid_metric.update((((x+1)/2)*255).type(torch.uint8), real=True)
-            # self.fid_metric.update((((from_pure_noise+1)/2)*255).type(torch.uint8), real=False)
+            self.fid_metric.update((((x+1)/2)*255).type(torch.uint8), real=True)
+            self.fid_metric.update((((from_pure_noise - from_pure_noise.min())/ (from_pure_noise.max() - from_pure_noise.min()) )*255).type(torch.uint8), real=False)
             
-            # fid_score = self.fid_metric.compute()
-            # self.log('FID', fid_score, on_epoch=True)
+            fid_score = self.fid_metric.compute()
+            self.log('FID', fid_score)
             
-            # self.fid_metric.reset()
+            self.fid_metric.reset()
                 
             # log images
             if batch_idx == self.log_indices[0]:
